@@ -7,8 +7,8 @@
 class KMPMatcher : public PlagiarismDetector
 {
 public:
-    KMPMatcher(std::string corpus_dir);
-    std::set<std::string> match(std::string sentence);
+    KMPMatcher(std::string corpus_dir); //constructor
+    std::set<std::string> match(std::string sentence); //matches sentence using KMP algorithm
 
 private:
     std::string matcher;

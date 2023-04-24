@@ -7,9 +7,9 @@
 class PlagiarismDetector
 {
 public:
-    PlagiarismDetector(std::string corpus_dir);
-    void load_corpus();
-    virtual std::set<std::string> match(std::string sentence) = 0;
+    PlagiarismDetector(std::string corpus_dir); //constructor
+    void load_corpus(); //loads all the documents in the corpus
+    virtual std::set<std::string> match(std::string sentence) = 0; //matches senctence with the corpus
 
 protected:
     std::string corpus_dir;
