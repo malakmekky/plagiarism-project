@@ -1,50 +1,65 @@
-/* an example of an implementation of boyer moore from geeks for geeks.
 #include <iostream>
 #include <string>
 #include <cstring>
 #include <algorithm>
+#include <set>
+#include "BoyerMooreMatcher.h"
+#include "plagiarismdetector.h"
 
-using namespace std;
-
-const int MAX_N = 1000005;
-int n, m;
-char T[MAX_N], P[MAX_N];
-int b[MAX_N], f[MAX_N];
-
-void kmpPreprocess() {
-    int i = 0, j = -1;
-    b[0] = -1;
-    while (i < m) {
-        while (j >= 0 && P[i] != P[j]) j = b[j];
-        i++; j++;
-        b[i] = j;
+class BoyerMooreMatcher : public PlagiarismDetector{
+public:
+    BoyerMooreMatcher(std::string corpus_dir) : PlagiarismDetector(corpus_dir) {}
+    std::set<std::string> match(std::string sentence) override{
+        std::set<std::string> matchesFound;
+        int n = sentence.length();
+        char text[n+1];
+        strcpy(text, sentence.c_str());
+        for (Document& doc : corpus){
+            std::vector<std::string> sentences = doc.get_sentences();
+            int m = sentences.at(0).length();
+            char patternArr[m+1];
+            strcpy(patternArr, doc.get_sentences().at(0).c_str());
+            std::reverse(patternArr, patternArr + m);
+            int border[m+1], shift[m+1];
+            preProcess(patternArr, m, border, shift);
+            for (int i = 0; i<=m; i++){
+                shift[i] = m - border[m];
+            }
+            for (int i = 1; i<=m; i++){
+                int j = border[i];
+                if (j>=0 && patternArr[i] == patternArr[j]){
+                    shift[i] = shift[j];
+                }
+            }
+            boyerMoore(text, patternArr, n, m, shift, matchesFound);
+            float percentage = ((float)matchesFound.size()/(float)m)*100.0;
+            doc.set_plagiarism_percentage(percentage);
+        }
+        return matchesFound;
     }
-}
-
-void boyerMoore() {
-    int i = 0, j = 0;
-    while (i < n) {
-        while (j >= 0 && T[i] != P[j]) j = f[j];
-        i++; j++;
-        if (j == m) {
-            cout << "Match found at index " << i - j << endl;
-            j = f[j];
+private:
+    void preProcess(char* pattern, int m, int* border, int* shift){
+        int i = 0, j = -1;
+        border[0] = -1;
+        while (i<m){
+            while (j>=0 && pattern[i] != pattern[j]){
+                j = border[j];
+            }
+            i++; j++;
+            border[i] = j;
         }
     }
-}
-
-int main() {
-    cin >> T >> P;
-    n = strlen(T);
-    m = strlen(P);
-    reverse(P, P + m);
-    kmpPreprocess();
-    for (int i = 0; i <= m; i++) f[i] = m - b[m];
-    for (int i = 1; i <= m; i++) {
-        int j = b[i];
-        if (j >= 0 && P[i] == P[j]) f[i] = f[j];
+    void boyerMoore(char* text, char* pattern, int n, int m, int* shift, std::set<std::string>& matchesFound){
+        int i = 0, j = 0;
+        while (i<n){
+            while (j>=0 && text[i] != pattern[j]){
+                j = shift[j];
+            }
+            i++; j++;
+            if (j == m){
+                matchesFound.insert(std::string(text + i - j, text + i));
+                j = shift[j];
+            }
+        }
     }
-    boyerMoore();
-    return 0;
-}
-*/
+};
