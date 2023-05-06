@@ -5,21 +5,22 @@
 #include <set>
 #include "BoyerMooreMatcher.h"
 #include "plagiarismdetector.h"
+using namespace std;
 
 class BoyerMooreMatcher : public PlagiarismDetector{
 public:
-    BoyerMooreMatcher(std::string corpus_dir) : PlagiarismDetector(corpus_dir) {}
-    std::set<std::string> match(std::string sentence) override{
-        std::set<std::string> matchesFound;
+    BoyerMooreMatcher(string corpus_dir) : PlagiarismDetector(corpus_dir) {}
+    set<string> match(string sentence) override{
+        set<string> matchesFound;
         int n = sentence.length();
         char text[n+1];
         strcpy(text, sentence.c_str());
         for (Document& doc : corpus){
-            std::vector<std::string> sentences = doc.get_sentences();
+            vector<string> sentences = doc.get_sentences();
             int m = sentences.at(0).length();
             char patternArr[m+1];
             strcpy(patternArr, doc.get_sentences().at(0).c_str());
-            std::reverse(patternArr, patternArr + m);
+            reverse(patternArr, patternArr + m);
             int border[m+1], shift[m+1];
             preProcess(patternArr, m, border, shift);
             for (int i = 0; i<=m; i++){
@@ -49,7 +50,7 @@ private:
             border[i] = j;
         }
     }
-    void boyerMoore(char* text, char* pattern, int n, int m, int* shift, std::set<std::string>& matchesFound){
+    void boyerMoore(char* text, char* pattern, int n, int m, int* shift, set<string>& matchesFound){
         int i = 0, j = 0;
         while (i<n){
             while (j>=0 && text[i] != pattern[j]){
@@ -57,7 +58,7 @@ private:
             }
             i++; j++;
             if (j == m){
-                matchesFound.insert(std::string(text + i - j, text + i));
+                matchesFound.insert(string(text + i - j, text + i));
                 j = shift[j];
             }
         }
