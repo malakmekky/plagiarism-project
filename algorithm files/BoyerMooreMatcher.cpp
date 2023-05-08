@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <set>
 #include "BoyerMooreMatcher.h"
-#include "plagiarismdetector.h"
+#include "PlagiarismDetector.h"
 using namespace std;
 
 class BoyerMooreMatcher : public PlagiarismDetector{
