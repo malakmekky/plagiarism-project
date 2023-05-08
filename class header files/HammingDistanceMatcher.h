@@ -6,7 +6,7 @@
 #include "PlagiarismDetector.h"
 class HammingDistanceMatcher : public PlagiarismDetector {
 public:
-    HammingDistanceMatcher(std::string corpus_dir); //constructor
+    int hammingDistance(char* text, char* pattern, int n/*std::string corpus_dir*/); //constructor
     std::set<std::string> match(std::string sentence); //matches sentence using hamming distance algorithm
 
 private:
