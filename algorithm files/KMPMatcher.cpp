@@ -1,10 +1,13 @@
-/* example of an implementation from geeks for geeks 
-
+#include "KMPMatcher.h"
 #include <iostream>
-#include <vector> 
-using namespace std;
+#include <string>
+#include "PlagiarismDetector.h"
+#include <set>
+#include <vector>
 
-void lps_func(string txt, vector<int>& Lps) {
+KMPMatcher::KMPMatcher(std::string corpus_dir) : PlagiarismDetector(corpus_dir) {}
+
+void lps_func(std::string txt, std::vector<int>& Lps) {
     Lps[0] = 0;
     int len = 0;
     int i = 1;
@@ -27,33 +30,33 @@ void lps_func(string txt, vector<int>& Lps) {
     }
 }
 
-void KMP(string pattern, string text) {
-    int n = text.length();
-    int m = pattern.length();
-    vector<int>Lps(m);
+std::set<std::string> KMPMatcher::match(std::string sentence) {
+    std::set<std::string> matchesFound;
+    int n = sentence.length();
+    char text[n+1];
+    strcpy(text, sentence.c_str());
+    for (auto& document : corpus) {
+        std::vector<std::string> sentences = document.get_sentences();
+        for (auto& s : sentences) {
+            int m = s.length();
+            std::vector<int> Lps(m);
+            lps_func(s, Lps);
 
-    lps_func(pattern, Lps);
+            int i = 0, j = 0;
+            while (i < n) {
+                if (s[j] == text[i]) { i++; j++; } 
 
-    int i = 0, j = 0;
-    while (i < n) {
-        if (pattern[j] == text[i]) { i++; j++; } 
-
-        if (j == m) {
-            cout << "pattern found at:" << i - m << ' ' << endl;
-                                  
-            j = Lps[j - 1];
-        } else if (i < n && pattern[j] != text[i]) {
-            if (j == 0)
-                i++;
-            else
-                j = Lps[j - 1];
+                if (j == m) {
+                    matchesFound.insert(s);
+                    break;
+                } else if (i < n && s[j] != text[i]) {
+                    if (j == 0)
+                        i++;
+                    else
+                        j = Lps[j - 1];
+                }
+            }
         }
     }
+    return matchesFound;
 }
-
-int main() {
-    string text = "abdabdabecabc";
-    string pattern = "abc";
-    KMP(pattern, text);
-    return 0;
-}*/
