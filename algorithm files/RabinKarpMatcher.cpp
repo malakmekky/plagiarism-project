@@ -1,13 +1,26 @@
-/* example rabin karp approach from geeks for geeks 
-#include <string.h>
+//example rabin karp approach from geeks for geeks 
+/*class RabinKarpMatcher : public PlagiarismDetector {
+public:
+    RabinKarpMatcher(string corpus_dir); //constructor
+    set<string> match(string sentence); //matches sentence using Rabin Karp algorithm
+
+private:
+    string matcher;
+};*/
+#include <cstring>
 #include <iostream>
+#include <fstream>
+//#include "RabinKarpMatcher.h"
+//#include "Document.h"
 using namespace std;
 
 #define d 10
 
-void rabinKarp(char pattern[], char text[], int q) {
-    int m = strlen(pattern);
-    int n = strlen(text);
+
+void rabinKarp(string pattern, string text, bool &found) {
+    int q = text.length();
+    int m = pattern.length();
+    int n = text.length();
     int i, j;
     int p = 0;
     int t = 0;
@@ -29,7 +42,10 @@ void rabinKarp(char pattern[], char text[], int q) {
             }
 
             if (j == m)
+            {
+                found = 1;
                 cout << "pattern found at: " << i + 1 << endl;
+            }
         }
 
         if (i < n - m) {
@@ -40,10 +56,28 @@ void rabinKarp(char pattern[], char text[], int q) {
         }
     }
 }
+// call variables
+//to compare effeciency, make a counter that increments every time it compares 
+void get_text(string pattern)
+{
+    string line;
+    fstream text;
+    bool found =0;
+    text.open("document1.txt");
+    while(getline(text,line))
+    { 
+        cout << line << endl;  
+        rabinKarp(pattern, line, found);
+        if(found)
+            break;
+    }
+    if(!found)
+        cout << "Not found" << endl;
+}
 
 int main() {
-    char text[] = "abaabdbebabc";
-    char pattern[] = "abc";
-    int q = 13;
-    rabinKarp(pattern, text, q);
-}*/
+    // string text = "abaabdbebabc";
+    string pattern = "khalil";
+    get_text(pattern);
+    // rabinKarp(pattern, text);
+}
