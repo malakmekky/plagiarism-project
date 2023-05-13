@@ -5,9 +5,7 @@
 #include "Document.h"
 #include "PlagiarismDetector.h"
 
-RabinKarpMatcher::RabinKarpMatcher(std::string corpus_dir){
-    this->corpus_dir = corpus_dir;
-    load_corpus();
+RabinKarpMatcher::RabinKarpMatcher(std::string corpus_dir) : PlagiarismDetector(corpus_dir){
 }
 
 std::set<std::string> RabinKarpMatcher::match(const std::string& sentence) const {
