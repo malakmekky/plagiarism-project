@@ -6,6 +6,10 @@
 #include "Document.h"
 #include "PlagiarismDetector.h"
 
+PlagiarismDetector::PlagiarismDetector(std::string corpus_dir){
+    this->corpus_dir = corpus_dir;
+    load_corpus();
+}
 void PlagiarismDetector::load_corpus() {
     std::vector<std::string> filenames = get_file_names(corpus_dir);
     for (const auto& filename : filenames) {
