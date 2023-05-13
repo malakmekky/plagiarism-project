@@ -17,7 +17,8 @@ void lps_func(std::string txt, std::vector<int>& Lps) {
             Lps[i] = len;
             i++;
             continue;
-        } else {
+        } 
+        else {
             if (len == 0) {
                 Lps[i] = 0;
                 i++;
