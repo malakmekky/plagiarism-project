@@ -1,83 +1,42 @@
-//example rabin karp approach from geeks for geeks 
-/*class RabinKarpMatcher : public PlagiarismDetector {
-public:
-    RabinKarpMatcher(string corpus_dir); //constructor
-    set<string> match(string sentence); //matches sentence using Rabin Karp algorithm
-
-private:
-    string matcher;
-};*/
 #include <cstring>
 #include <iostream>
 #include <fstream>
-//#include "RabinKarpMatcher.h"
-//#include "Document.h"
-using namespace std;
+#include "RabinKarpMatcher.h"
+#include "Document.h"
+#include "PlagiarismDetector.h"
 
-#define d 10
-
-
-void rabinKarp(string pattern, string text, bool &found) {
-    int q = text.length();
-    int m = pattern.length();
-    int n = text.length();
-    int i, j;
-    int p = 0;
-    int t = 0;
-    int h = 1;
-
-    for (i = 0; i < m - 1; i++)
-        h = (h * d) % q;
-
-    for (i = 0; i < m; i++) {
-        p = (d * p + pattern[i]) % q;
-        t = (d * t + text[i]) % q;
-    }
-
-    for (i = 0; i <= n - m; i++) {
-        if (p == t) {
-            for (j = 0; j < m; j++) {
-                if (text[i + j] != pattern[j])
-                    break;
-            }
-
-            if (j == m)
-            {
-                found = 1;
-                cout << "pattern found at: " << i + 1 << endl;
-            }
-        }
-
-        if (i < n - m) {
-            t = (d * (t - text[i] * h) + text[i + m]) % q;
-
-            if (t < 0)
-                t = (t + q);
-        }
-    }
-}
-// call variables
-//to compare effeciency, make a counter that increments every time it compares 
-void get_text(string pattern)
-{
-    string line;
-    fstream text;
-    bool found =0;
-    text.open("document1.txt");
-    while(getline(text,line))
-    { 
-        cout << line << endl;  
-        rabinKarp(pattern, line, found);
-        if(found)
-            break;
-    }
-    if(!found)
-        cout << "Not found" << endl;
+RabinKarpMatcher::RabinKarpMatcher(std::string corpus_dir){
+    this->corpus_dir = corpus_dir;
+    load_corpus();
 }
 
-int main() {
-    // string text = "abaabdbebabc";
-    string pattern = "khalil";
-    get_text(pattern);
-    // rabinKarp(pattern, text);
+std::set<std::string> RabinKarpMatcher::match(const std::string& sentence) const {
+    std::set<std::string> matched_files;
+
+    for (const auto& doc : corpus) {
+        if (doc.search_pattern(sentence)) {
+            matched_files.insert(doc.get_file_path());
+        }
+    }
+
+    return matched_files;
+}
+
+
+void RabinKarpMatcher::load_corpus() {
+    std::vector<std::string> filenames = get_file_names(corpus_dir);
+    for (const auto& filename : filenames) {
+        Document doc(filename);
+        corpus.push_back(doc);
+    }
+}
+
+std::vector<std::string> RabinKarpMatcher::get_file_names(const std::string& directory_path) {
+    std::vector<std::string> filenames;
+    for (const auto& entry : std::filesystem::directory_iterator(directory_path)) {
+        if (entry.is_regular_file()) {
+            filenames.push_back(entry.path().string());
+        }
+    }
+    return filenames;
 }
